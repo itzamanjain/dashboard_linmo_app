@@ -1,0 +1,46 @@
+import Location from "./Location";
+
+export default interface Creator {
+    uid: string;
+    userType: string;
+    bio: string;
+    age: number;
+    email: string;
+    isHidden: boolean;
+    birthDate: string;
+    coverPhoto: string;
+    mainProfilePhoto: string;
+    userPhotos: string[];
+    userInterests: string[];
+    name: string;
+    gender: string;
+    blockedUsers: string[];
+    joinedActivities: string[];
+    joinedEvents: string[];
+    joinedTrips: string[];
+    bookmarkedEvents: string[];
+    bookmarkedActivities: string[];
+    bookmarkedTrips: string[];
+    isProfileVerified: boolean;
+    isEmailVerified: boolean;
+    instagram: string;
+    tikTok: string;
+    website: string;
+    link: string;
+    youTube: string;
+    fcmToken: string[];
+    reviewCount: number;
+    nationality: string;
+    nationalityCode: string;
+    connectedAccountId: string;
+    createdAt: string;
+    lastSignedInAt: string;
+    createdLocation: Location;
+    location: Location;
+    locationString: string;
+    isNotificationsEnabled: boolean;
+    isActivitiesNotificationsEnabled: boolean;
+    isConnectionNotificationsEnabled: boolean;
+    isMessageNotificationsEnabled: boolean;
+    method?: string;
+}

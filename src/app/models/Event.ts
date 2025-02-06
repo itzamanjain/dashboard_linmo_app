@@ -1,0 +1,39 @@
+import Creator from "./Creator";
+import Location from "./Location";
+
+export default interface Event {
+    trainingId?: string;
+    type: string;
+    coverPhotoUrl: string;
+    optionalPhotos: string[];
+    sport: string;
+    title: string;
+    description: string;
+    cancelled: boolean;
+    deleted: boolean;
+    participants: string[];
+    participantsLimit: number;
+    isUnlimitedParticipants: boolean;
+    trainingLocationString: string;
+    trainingLocation: Location;
+    trainingStartDateTime: string;
+    trainingEndDateTime: string;
+    commentCount: number;
+    link: string;
+    likedBy: string[];
+    createdAt: string;
+    paymentMethods: string[];
+    price: number;
+    priceCurrency: string | undefined;
+    clubId: string;
+    otherPaymentMethod: string;
+    creator: Creator | string;
+    creatorUid?: string;
+    titles?: string[];
+    subscriptionsAllowed?: string[];
+    isRepeatEvent?: boolean;
+    repeatEventFrequency?: number;
+    comments?: string[];
+    sessionId?: string;
+    isOnline: boolean;
+}
