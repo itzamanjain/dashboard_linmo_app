@@ -109,9 +109,11 @@ const CreateEvent = (props: CreateEventProps) => {
         setRepeatEventFrequency(eventData.repeatEventFrequency);
         setSelectedDropdownOption(eventRepeatOption);
         setSelectedImages(combinedImages);
+        console.log("eventData.trainingLocation.coordinates ✨✨", eventData.trainingLocation.coordinates);
+        
         setPosition({
-            lat: eventData.trainingLocation.coordinates[1],
-            lng: eventData.trainingLocation.coordinates[0],
+            lat: eventData.trainingLocation.coordinates[0],
+            lng: eventData.trainingLocation.coordinates[1],
         });
     };
 
@@ -280,7 +282,7 @@ const CreateEvent = (props: CreateEventProps) => {
             trainingLocationString: address || "",
             trainingLocation: {
                 type: 'Point',
-                coordinates: [position.lng, position.lat],
+                coordinates: [position.lat, position.lng],
             },
             likedBy: [],
             link: "",
@@ -290,7 +292,7 @@ const CreateEvent = (props: CreateEventProps) => {
             price: newPrice,
             deleted: false,
             clubId: "",
-            priceCurrency: !isFree ? priceCurrency : '',
+            priceCurrency: !isFree ? priceCurrency?.toUpperCase() : '',
             subscriptionsAllowed: subscriptionsAllowedToSend,
             otherPaymentMethod: "",
             isRepeatEvent: repeatEventFrequency === 0 ? false : true,
@@ -303,6 +305,8 @@ const CreateEvent = (props: CreateEventProps) => {
             ...(isEditingEvent && { trainingId: eventId })
         };
 
+        console.log("eventData ✨✨✨", eventData);
+        
         try {
             const method = isEditingEvent ? "PUT" : "POST";
             const url = isEditingEvent ? `${HOME_URL}event/` : `${HOME_URL}event/repeating`;
@@ -313,7 +317,8 @@ const CreateEvent = (props: CreateEventProps) => {
                 },
                 body: JSON.stringify(eventData)
             });
-
+            console.log("response ✨✨", response);
+            
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(errorText);
@@ -358,9 +363,9 @@ const CreateEvent = (props: CreateEventProps) => {
                 (currency) => currency.name === subscriptionCurrencyCode
             );
 
-            setPriceCurrency(matchedCurrency?.name || currencies[1].name);
+            setPriceCurrency(matchedCurrency?.name.toUpperCase() || currencies[1].name.toUpperCase());
         } else {
-            setPriceCurrency(currencies[1].name);
+            setPriceCurrency(currencies[1].name.toUpperCase());
         }
     }, [subscriptions]);
 

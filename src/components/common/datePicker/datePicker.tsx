@@ -139,7 +139,17 @@ const DatePicker = (props: DatePickerProps) => {
                 </div>
                 <div className="absolute left-[0.331rem] top-[2rem] h-[3.125rem] border-l border-darkMetal border-dashed" />
             </div>
-            <div className="flex gap-4 items-center cursor-pointer relative" onClick={() => handleOpenCalendar(true)}>
+            <div
+                className={`flex gap-4 items-center relative ${!selectedStartDate ? 'pointer-events-none opacity-50' : 'cursor-pointer'
+                    }`}
+                    onClick={() => {
+                        if (!selectedStartDate) {
+                            alert("Please select a start date first.");
+                            return;
+                        }
+                        handleOpenCalendar(true);
+                    }}
+            >
                 <div className="flex gap-4 w-full max-w-[4rem]">
                     <Image
                         src="/static/black-dot.svg"
@@ -150,11 +160,11 @@ const DatePicker = (props: DatePickerProps) => {
                     <h3 className="text-white font-semibold text-base leading-6">End</h3>
                 </div>
                 <div className={`flex rounded-xl py-3 px-4 w-full justify-between border
-                    ${isCalendarOpen && isSelectingEndDate ? 'border-green' : 'border-darkMetal'}`}>
+        ${isCalendarOpen && isSelectingEndDate ? 'border-green' : 'border-darkMetal'}`}>
                     <p className="text-white opacity-90 font-normal text-sm leading-custom-22">
                         {selectedEndDate || selectedEndTime
                             ? `${selectedEndDate ? selectedEndDate.format('ddd, DD MMM') : 'Select end date'} at 
-                                    ${selectedEndTime ? selectedEndTime.format('HH:mm') : 'Select end time'}`
+                        ${selectedEndTime ? selectedEndTime.format('HH:mm') : 'Select end time'}`
                             : "Select end date & time"}
                     </p>
                     <Image
@@ -165,6 +175,7 @@ const DatePicker = (props: DatePickerProps) => {
                     />
                 </div>
             </div>
+
             {isCalendarOpen && (
                 <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
                     <div ref={modalRef} className="flex bg-darkJungle p-6 rounded-lg gap-6">
