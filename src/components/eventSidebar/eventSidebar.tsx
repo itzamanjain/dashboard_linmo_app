@@ -143,49 +143,13 @@ const EventSidebar = (props: EventSidebarProps) => {
                             </h3>
                         </div>
                     </div>
-                    <div className="bg-rangoonGreen rounded-xl p-3 flex flex-col gap-2 items-start">
-                        <div className="justify-between items-center flex w-full">
-                            <div className="flex gap-3 items-center">
-                                <div className="w-[2rem] h-[2rem] overflow-hidden rounded-full">
-                                    <Image
-                                        src={userPhoto}
-                                        alt="Nolan Dorwart"
-                                        width={32}
-                                        height={32}
-                                    />
-                                </div>
-                                <div className="flex flex-col">
-                                    <p className="text-gray text-xs font-normal leading-custom-18">Hosted by</p>
-                                    <h3 className="font-semibold text-white text-sm leading-5">{displayName}</h3>
-                                </div>
-                            </div>
-                            <>
-                                <button className="text-black text-xs font-bold leading-custom-18 py-1 px-3 bg-white rounded-full">
-                                    Message
-                                </button>
-                            </>
-                        </div>
-                        <div className="border-t border-darkJungle"></div>
-                        <button className="text-green text-xs leading-custom-18 font-normal flex gap-2 items-center">
-                            See more events from this coach
-                            <Image
-                                src={"/static/btn-arr.svg"}
-                                alt="More"
-                                width={4}
-                                height={8}
-                            />
-                        </button>
-                    </div>
+                    
                     <div className="flex- flex-col gap-[0.125rem]">
                         <h3 className="text-white font-semibold text-base leading-6">Description</h3>
                         <p className="text-iron font-normal text-base leading-6">
                             {description ?
                                 description :
-                                `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Felis nunc purus urna,
-                            nisi nulla rhoncus vel, non. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                            Felis nunc purus urna, nisi nulla rhoncus vel, non. consectetur adipiscing elit.
-                            Felis nunc purus urna, nisi nulla rhoncus vel, non. consectetur adipiscing elit.
-                            Felis nunc purus urna, nisi nulla rhoncus vel, non.`
+                                `Where to meet,What to bring , what language it is in,and who it is for (e.g beginner,all levels)`
                             }
                         </p>
                     </div>
@@ -278,7 +242,7 @@ const EventSidebar = (props: EventSidebarProps) => {
                             }
                         </div>
                     </div>
-                    <div className="flex flex-col gap-2 justify-center">
+                    {/* <div className="flex flex-col gap-2 justify-center">
                         <div className="flex">
                             <div className="flex gap-1">
                                 <Image
@@ -340,7 +304,7 @@ const EventSidebar = (props: EventSidebarProps) => {
                                 </div>
                             </SwiperSlide>
                         </Swiper>
-                    </div>
+                    </div> */}
                     <div className="py-4 border-t border-darkJungle flex flex-col gap-2">
                         <h3 className="text-white font-semibold text-base leading-6">Location</h3>
                         <p className="text-gray font-normal text-sm leading-custom-22">{address}</p>

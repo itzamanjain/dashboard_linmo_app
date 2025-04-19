@@ -165,13 +165,13 @@ const EventContent = (props: EventContentProps) => {
                 />
                 <div className="flex flex-col gap-8 py-6">
                     <div className="flex flex-col gap-4">
-                        <h3 className="text-white text-lg font-semibold leading-6">Class title</h3>
+                        <h3 className="text-white text-lg font-semibold leading-6">Title</h3>
                         <input
                             type="text"
                             name="class"
                             value={title}
                             onChange={handleTitleChange}
-                            placeholder="Enter class title"
+                            placeholder="E.g Morning Yoga in the Park"
                             className="font-normal text-sm leading-custom-22 bg-black text-white rounded-xl
                             border border-darkMetal py-3 px-4 placeholder:text-darkgray focus:outline-none opacity-90"
                         />
@@ -195,7 +195,7 @@ const EventContent = (props: EventContentProps) => {
                             <textarea
                                 className="bg-black font-normal text-sm leading-custom-22 text-white opacity-90
                             focus:outline-none py-3 px-4 border border-darkMetal rounded-xl placeholder:text-darkgray"
-                                placeholder="Enter class description"
+                                placeholder="Where to meet,What to bring , what language it is in,and who it is for (e.g beginner,all levels)"
                                 name="description"
                                 rows={6}
                                 value={description}
@@ -210,7 +210,7 @@ const EventContent = (props: EventContentProps) => {
                         /> */}
                     </div>
                     <div className="flex flex-col gap-4">
-                        <h3 className="text-white text-lg font-semibold leading-6">Upload cover</h3>
+                        <h3 className="text-white text-lg font-semibold leading-6">Upload cover Image (Max 3 Photos)</h3>
                         <EventImageUpload
                             onImageUpload={onImageUpload}
                             selectedImages={selectedImages}
@@ -291,7 +291,7 @@ const EventContent = (props: EventContentProps) => {
                         />
                     </div>
                     <div className="flex flex-col gap-4">
-                        <h3 className="text-white text-lg font-semibold leading-6">Max Attendees</h3>
+                        <h3 className="text-white text-lg font-semibold leading-6">Participant Limit</h3>
                         <div className="flex gap-6 items-center">
                             {
                                 !isUnlimitedAttendees && (
@@ -344,7 +344,7 @@ const EventContent = (props: EventContentProps) => {
                         </div>
                     </div>
                     <div className="flex flex-col gap-4">
-                        <h3 className="text-white text-lg font-semibold leading-6">Price</h3>
+                        <h3 className="text-white text-lg font-semibold leading-6">Ticket Price</h3>
                         <div
                             className={`relative flex ${isFree ? 'bg-darkJungle overflow-hidden rounded-xl' : ''}`}
                             ref={dropdownRef}
