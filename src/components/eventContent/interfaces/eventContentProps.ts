@@ -22,6 +22,10 @@ export default interface EventContentProps extends
     setMaxAttendees: Dispatch<SetStateAction<number>>;
     isFree: boolean;
     setIsFree: Dispatch<SetStateAction<boolean>>;
+    setIsOnline: Dispatch<SetStateAction<boolean>>;
+    isOnline: boolean;
+    meetLink: string;
+    setMeetLink: Dispatch<SetStateAction<string>>;
     price: number;
     setPrice: Dispatch<SetStateAction<number>>;
     priceCurrency: string | undefined;

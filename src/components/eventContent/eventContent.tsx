@@ -15,6 +15,8 @@ import EventImageUpload from "../eventImageUpload/eventImageUpload";
 
 import EventContentProps from "./interfaces/eventContentProps";
 import CurrenciesInterface from "../subscriptions/interfaces/currenciesInterface";
+import { cn } from "@/lib/utils";
+import { Link } from "lucide-react";
 
 const EventContent = (props: EventContentProps) => {
     const { onSelect,
@@ -24,6 +26,7 @@ const EventContent = (props: EventContentProps) => {
         isUnlimitedAttendees,
         maxAttendees,
         isFree,
+        isOnline,
         price,
         priceCurrency,
         allowMembership,
@@ -40,12 +43,15 @@ const EventContent = (props: EventContentProps) => {
         setAllowMembership,
         setDescription,
         setIsFree,
+        setIsOnline,
         setIsUnlimitedAttendees,
         setMaxAttendees,
         setPrice,
         setPriceCurrency,
         setSelectedCategory,
         setTitle,
+        setMeetLink,
+        meetLink,
         setSelectedDropdownOption,
         setSelectedEndDate,
         setSelectedEndTime,
@@ -61,6 +67,11 @@ const EventContent = (props: EventContentProps) => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [selectedCurrency, setSelectedCurrency] = useState<CurrenciesInterface>(currencies[1]);
     const dropdownRef = useRef<HTMLDivElement | null>(null);
+    const [locationType, setLocationType] = useState<"inperson" | "online">("inperson")
+    // const [isOnline, setIsOnline] = useState(false);
+    // const [address, setAddress] = useState("")
+    // const [meetLink, setMeetLink] = useState("")
+
     const subscriptions = useSliceSelector(state => state.dashboard.subscriptions);
 
     useEffect(() => {
@@ -210,23 +221,67 @@ const EventContent = (props: EventContentProps) => {
                     </div>
                     <div className="flex flex-col gap-4">
                         <h3 className="text-white text-lg font-semibold leading-6">Location</h3>
-                        <div className="relative">
-                            <SearchLocation
-                                onSelect={onSelect}
-                                address={address}
-                                setAddress={setAddress}
-                            />
-                            <div
-                                className={`absolute flex items-center justify-center top-2 right-2 cursor-pointer py-1 px-3 rounded-full`}
+
+                        <div className="flex rounded-lg bg-[#1F1F1F] overflow-hidden">
+                            <button
+                                onClick={() => setLocationType("inperson")}
+                                className={cn(
+                                    "flex-1 py-3 text-center font-semibold transition-colors",
+                                    locationType === "inperson" ? "bg-white rounded-2xl text-black" : "text-white",
+                                )}
                             >
-                                <Image
-                                    src="/static/pin.svg"
-                                    alt="location"
-                                    width={14}
-                                    height={14}
-                                />
-                            </div>
+                                In Person
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setLocationType("online");
+                                    setIsOnline(true);
+                                    
+                                }}
+                                className={cn(
+                                    "flex-1 py-3 text-center font-semibold transition-colors",
+                                    locationType === "online" ? "bg-white rounded-2xl text-black" : "text-white",
+                                )}
+                            >
+                                Online
+                            </button>
                         </div>
+
+                        {locationType === "inperson" ? (
+                            <div className="relative">
+                                <SearchLocation
+                                    onSelect={onSelect}
+                                    address={address}
+                                    setAddress={setAddress}
+                                />
+                                <div
+                                    className={`absolute flex items-center justify-center top-2 right-2 cursor-pointer py-1 px-3 rounded-full`}
+                                >
+                                    <Image
+                                        src="/static/pin.svg"
+                                        alt="location"
+                                        width={14}
+                                        height={14}
+                                    />
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="relative">
+                                <div className="flex items-center font-normal text-sm leading-custom-22 bg-black text-white rounded-xl
+                    border border-darkMetal py-3 px-4 placeholder:text-darkgray focus:outline-none opacity-90 w-full bg-gray-800 ">
+                                    <Link width={16} height={16} className="mr-2 text-white" />
+                                    <input
+                                        type="url"
+                                        value={meetLink}
+                                        onChange={(e) => setMeetLink(e.target.value)}
+                                        placeholder="Enter meeting link"
+                                        className="bg-transparent text-white w-full outline-none placeholder:text-gray-400"
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+
                     </div>
                     <div className="flex flex-col gap-4">
                         <h3 className="text-white text-lg font-semibold leading-6">Category</h3>

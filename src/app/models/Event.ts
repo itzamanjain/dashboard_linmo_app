@@ -20,6 +20,7 @@ export default interface Event {
     trainingEndDateTime: string;
     commentCount: number;
     link: string;
+    meetLink: string;
     likedBy: string[];
     createdAt: string;
     paymentMethods: string[];

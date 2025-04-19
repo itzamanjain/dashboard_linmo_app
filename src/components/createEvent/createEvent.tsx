@@ -35,6 +35,8 @@ const CreateEvent = (props: CreateEventProps) => {
     const [maxAttendees, setMaxAttendees] = useState(0);
     const [isFree, setIsFree] = useState(true);
     const [price, setPrice] = useState(0);
+    // const [eventMeetLink, seteventMeetingLink] = useState("");
+    // const [isOnline, setIsEventOnline] = useState(false);
     const [priceCurrency, setPriceCurrency] = useState<string | undefined>(currencies[1].name);
     const [allowMembership, setAllowMembership] = useState(true);
     const [selectedStartDate, setSelectedStartDate] = useState<Moment | null>(null);
@@ -53,6 +55,7 @@ const CreateEvent = (props: CreateEventProps) => {
     });
     const [isErrModal, setIsErrModal] = useState(false);
     const [isOnline, setIsOnline] = useState(false);
+    const [meetLink,setMeetLink] = useState("");
     const [modalContent, setModalContent] = useState<ModalContent>({
         iconSrc: '',
         title: '',
@@ -101,6 +104,7 @@ const CreateEvent = (props: CreateEventProps) => {
         setPrice(eventData.price || 0);
         setPriceCurrency(eventData.priceCurrency);
         setIsOnline(eventData.isOnline);
+        setMeetLink(eventData.meetLink);
         // setAllowMembership(subLength ? true : false);
         setSelectedStartDate(moment(eventData.trainingStartDateTime));
         setSelectedEndDate(moment(eventData.trainingEndDateTime));
@@ -149,6 +153,7 @@ const CreateEvent = (props: CreateEventProps) => {
         setSelectedDropdownOption("No repeat");
         setSelectedImages([]);
         setSelectedFiles([]);
+
         setPosition({
             lat: 41.3963,
             lng: 2.1592,
@@ -301,6 +306,7 @@ const CreateEvent = (props: CreateEventProps) => {
             comments: [],
             sessionId: "",
             isOnline,
+            meetLink,
             createdAt: new Date().toISOString(),
             ...(isEditingEvent && { trainingId: eventId })
         };
@@ -411,6 +417,10 @@ const CreateEvent = (props: CreateEventProps) => {
                 setIsFree={setIsFree}
                 price={price}
                 setPrice={setPrice}
+                isOnline={isOnline}
+                setIsOnline={setIsOnline}
+                meetLink={meetLink}
+                setMeetLink={setMeetLink}
                 priceCurrency={priceCurrency}
                 setPriceCurrency={setPriceCurrency}
                 allowMembership={allowMembership}
