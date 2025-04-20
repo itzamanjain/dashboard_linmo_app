@@ -16,7 +16,7 @@ import EventImageUpload from "../eventImageUpload/eventImageUpload";
 import EventContentProps from "./interfaces/eventContentProps";
 import CurrenciesInterface from "../subscriptions/interfaces/currenciesInterface";
 import { cn } from "@/lib/utils";
-import { Link } from "lucide-react";
+import { Euro, Gem, Info, Link } from "lucide-react";
 
 const EventContent = (props: EventContentProps) => {
     const { onSelect,
@@ -236,7 +236,7 @@ const EventContent = (props: EventContentProps) => {
                                 onClick={() => {
                                     setLocationType("online");
                                     setIsOnline(true);
-                                    
+
                                 }}
                                 className={cn(
                                     "flex-1 py-3 text-center font-semibold transition-colors",
@@ -414,44 +414,62 @@ const EventContent = (props: EventContentProps) => {
                     {!isFree && subscriptions.length !== 0 && (
                         <div className="flex flex-col gap-4">
                             <h3 className="text-white text-lg font-semibold leading-6">Memberships</h3>
+                            <div className="flex  border border-[#9F7CF8] justify-between items-center  rounded-xl p-3">
+                                <div className="flex flex-col gap-1 rounded-md ">
+                                    <h3 className="text-white font-semibold text-base leading-6">Allow Memberships</h3>
+                                    <h2 className="leading-6 text-base font-normal text-[#F0F0F0]">
+                                        Members can book this event as part of their membership plan.
+                                    </h2>
+                                </div>
+
+                                <Checkbox checked={allowMembership} onChange={handleMembershipChange} />
+                            </div>
                             {subscriptions.map((sub, index) => (
                                 <div
                                     key={index}
-                                    className="flex rounded-[10px] p-3 items-center cursor-pointer bg-rangoonGreen"
+                                    className="flex justify-between items-center rounded-[10px] p-3 cursor-pointer bg-[#674BB1]"
                                 >
-                                    <div className="flex gap-3">
-                                        <Image
+                                    {/* Left side: Icon and subscription name */}
+                                    <div className="flex items-center gap-3">
+                                        {/* <Image
                                             src={'/static/gift.svg'}
                                             alt={"sub"}
                                             width={24}
                                             height={24}
+                                        /> */}
+                                        <Gem 
+                                            width={24}
+                                            height={24} 
+                                            className="text-white" 
                                         />
-                                        <h3
-                                            className="font-semibold text-base leading-6 text-white"
-                                        >
+                                        <h3 className="font-semibold text-base leading-6 text-white">
                                             {sub.subscriptionName}
                                         </h3>
                                     </div>
+
+                                    {/* Right side: Currency and Price */}
+                                    <div className="flex items-center gap-0.5 text-white font-semibold text-base leading-6">
+                                        {sub.currency === 'eur' ? (
+                                            '€'
+                                        ) : (
+                                            '$'
+                                        )}
+                                        {sub.price}
+                                    </div>
                                 </div>
+
                             ))}
-                            <div className="flex items-center rounded-xl py-3 px-4 w-full gap-3 border border-darkMetal cursor-pointer">
-                                <Image
-                                    src="/static/info.svg"
-                                    alt="info"
-                                    width={20}
-                                    height={20}
-                                />
-                                <p className="text-white opacity-90 font-normal text-sm leading-custom-22">
-                                    You can manage your membership on the club settings page.
+                            <div className="flex flex-col items-start rounded-xl py-3 px-4 w-full gap-2 border border-[#9F7CF8] cursor-pointer">
+                                <div className="flex items-center gap-2">
+                                    <Info className="text-[#9F7CF8]" width={20} height={20} />
+                                    <h3 className="text-white font-medium text-base leading-6">Important</h3>
+                                </div>
+                                <p className="text-white opacity-90 font-light text-sm leading-custom-22">
+                                    Turn this on if you want members to join this event using their plan. Leave it off for special sessions not covered by memberships.
                                 </p>
                             </div>
-                            <div className="flex justify-between items-center bg-darkMetal rounded-xl p-3">
-                                <div className="flex flex-col gap-1">
-                                    <h3 className="text-white font-medium text-base leading-6">Allow Memberships</h3>
-                                    <h2 className="leading-6 text-base font-normal text-custard">Enable booking this event using membership credits.</h2>
-                                </div>
-                                <Checkbox checked={allowMembership} onChange={handleMembershipChange} />
-                            </div>
+
+
                         </div>
                     )}
                 </div>

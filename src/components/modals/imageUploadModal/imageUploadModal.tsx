@@ -49,7 +49,7 @@ const ImageUploadModal = (props: ImageUploadModalProps) => {
                     />
                     {imageUrl
                         ? <div className="flex flex-col gap-6 justify-center items-center w-full">
-                            <div className="relative rounded-xl w-[500px] h-[300px] mt-4">
+                            <div className="relative  rounded-xl w-[500px] h-[300px] md:w-[600px] md:h-[400px] mt-4">
                                 <Cropper
                                     image={imageUrl}
                                     crop={crop}
@@ -101,7 +101,7 @@ const ImageUploadModal = (props: ImageUploadModalProps) => {
                         </div>
                         : <div className="flex flex-col gap-6 justify-center items-center w-full">
                             <div
-                                className="bg-rangoonGreen border border-dashed border-darkMetal flex flex-col justify-center items-center rounded-xl min-h-[200px] w-[200px] cursor-pointer mt-4"
+                                className=" border border-dashed border-darkMetal flex flex-col justify-center items-center rounded-xl min-h-[200px] w-[200px] cursor-pointer mt-4"
                                 onClick={handleChangeImageClick}
                                 onDragOver={handleDragOver}
                                 onDrop={handleDrop}
