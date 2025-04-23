@@ -168,11 +168,11 @@ const EventCard = (props: EventCardProps) => {
     
 
     const handleEdit = useCallback((type: 'one' | 'all' | null) => {
-        console.log("Editing event: ✅✅✅", trainingId);
+        console.log("Editing event:", trainingId);
         
         // Make sure to set the active event ID again
         if (trainingId) {
-            console.log("setting to localStorage ❤️❤️", trainingId);
+            console.log("setting to localStorage", trainingId);
             
             localStorage.setItem('editingEventId', trainingId);
             dispatch(setActiveEventId(trainingId));

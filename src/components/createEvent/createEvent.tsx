@@ -364,13 +364,13 @@ const CreateEvent = (props: CreateEventProps) => {
             ...((isEditingEvent || isEditingFollowingEvent) && { trainingId: eventId })
         };
 
-        console.log("eventData ✨✨✨", eventData);
+        console.log("eventData", eventData);
 
         try {
             let method, url;
-            console.log("this is isEditingFollowingEvent ✨✨", isEditingFollowingEvent);
-            console.log("this is isEditingEvent ✨✨", isEditingEvent);
-            console.log("this is eventId ✨✨", eventId);
+            console.log("this is isEditingFollowingEvent ", isEditingFollowingEvent);
+            console.log("this is isEditingEvent ", isEditingEvent);
+            console.log("this is eventId ", eventId);
             
             if (isEditingFollowingEvent) {
                 method = "PUT";
@@ -393,7 +393,7 @@ const CreateEvent = (props: CreateEventProps) => {
                     currDateTime: new Date().toISOString(),
                     updatedEvent: eventData,
                 });
-                console.log("Response ✨✨", response);
+                console.log("Response ", response);
         
                 setModalContent({
                     iconSrc: '/static/checkmark.svg',
@@ -413,7 +413,7 @@ const CreateEvent = (props: CreateEventProps) => {
                     body: JSON.stringify(eventData),
                 });
         
-                console.log("Response ✨✨", response);
+                console.log("Response ", response);
         
                 if (!response.ok) {
                     const errorText = await response.text();

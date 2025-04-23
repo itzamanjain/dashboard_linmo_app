@@ -63,7 +63,7 @@ const Subscriptions = () => {
     const adminClubId = useSliceSelector(state => state.dashboard.adminClubId);
     const user = useSliceSelector((state => state.dashboard.userDetails));
     const userId = user.uid;
-    console.log("user ✨✨✨", user);
+    console.log("user ", user);
     const [connectedAccountId,setConnectedAccountId] = useState("");
     const [connectedAccountStatus,setConnectedAccountStatus] = useState("");
     
@@ -97,7 +97,7 @@ const Subscriptions = () => {
         }
     },[])
 
-    console.log("connectedAccountId 🙄🙄🙄🙄", connectedAccountId);
+    console.log("connectedAccountId ", connectedAccountId);
     
 
     const handleCreateSub = async () => {
@@ -167,7 +167,7 @@ const Subscriptions = () => {
             const response = await axios.post(path,{
                 connectedAccountId
             })
-            console.log("this is response 👍👍👍 from canCreateSub",response);
+            console.log("this is response canCreateSub",response);
             setConnectedAccountStatus(response.data.status);
 
             if(response.data.status != "completed"){

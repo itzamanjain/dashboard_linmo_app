@@ -99,11 +99,11 @@ const WeeklyCalendar = ({ upcomingEvents }: { upcomingEvents: Event[] }) => {
 
     
         const handleEdit = useCallback((type: 'one' | 'all' | null) => {
-            console.log("Editing event: ✅✅✅", activeEventId);
+            console.log("Editing event:", activeEventId);
             
             // Make sure to set the active event ID again
             if (activeEventId) {
-                console.log("setting to localStorage ❤️❤️", activeEventId);
+                console.log("setting to localStorage ", activeEventId);
                 
                 localStorage.setItem('editingEventId', activeEventId);
                 dispatch(setActiveEventId(activeEventId));
