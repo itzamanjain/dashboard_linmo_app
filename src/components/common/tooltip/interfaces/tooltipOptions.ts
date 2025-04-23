@@ -1,6 +1,6 @@
 export default interface TooltipOptions {
     option: string;
-    action?: () => void;
+    action?: (type: "one" | "all" | null) => void;
     icon: {
         src: string;
         width: number;

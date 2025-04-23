@@ -6,6 +6,7 @@ import MonthCalendar from "../monthCalendar/monthCalendar";
 import TimePicker from "../timePicker/timePicker";
 
 import DatePickerProps from "./interfaces/datePickerProps";
+import useSliceSelector from "@/hooks/useSliceSelector";
 
 const DatePicker = (props: DatePickerProps) => {
     const { selectedDropdownOption,
@@ -24,7 +25,9 @@ const DatePicker = (props: DatePickerProps) => {
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isSelectingEndDate, setIsSelectingEndDate] = useState(false);
-
+    const isEditingEvent = useSliceSelector(state => state.dashboard.isEditingEvent);
+    const isEditingFollowingEvent = useSliceSelector(state => state.dashboard.isEditingFollowingEvent);
+ 
     const modalRef = useRef<HTMLDivElement | null>(null);
     const dropdownRef = useRef<HTMLDivElement | null>(null);
 
@@ -111,7 +114,14 @@ const DatePicker = (props: DatePickerProps) => {
     return (
         <div className="flex flex-col gap-4 relative">
             <h3 className="font-semibold text-lg leading-6 text-white">Date & time</h3>
-            <div className="flex gap-4 items-center cursor-pointer relative" onClick={() => handleOpenCalendar(false)}>
+            <div className="flex gap-4 items-center cursor-pointer relative" onClick={() => {
+                if(isEditingEvent || isEditingFollowingEvent) {
+                    alert("You cannot change the date and time of an event that is being edited.");
+                    return;
+                }
+                handleOpenCalendar(false)}
+            }
+                >
                 <div className="flex gap-4 w-full max-w-[4rem]">
                     <Image
                         src="/static/white-dot.svg"
@@ -145,6 +155,10 @@ const DatePicker = (props: DatePickerProps) => {
                     onClick={() => {
                         if (!selectedStartDate) {
                             alert("Please select a start date first.");
+                            return;
+                        }
+                        if (isEditingEvent || isEditingFollowingEvent) {
+                            alert("You cannot change the date and time of an event that is being edited.");
                             return;
                         }
                         handleOpenCalendar(true);

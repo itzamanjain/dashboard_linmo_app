@@ -6,10 +6,11 @@ import Modal from "@/components/modals/modal/modal";
 import Tooltip from "../tooltip/tooltip";
 
 import useReducerDispatch from "@/hooks/useReducerDispatch";
-import { removeEvent, setActiveContent, setActiveEventId, setAttendeesIds, setIsEditingEvent, setMainActiveContent } from "@/reducers/dashboard/dashboardSlice";
+import { removeEvent, setActiveContent, setActiveEventId, setAttendeesIds, setIsEditingEvent, setIsEditingFollowingEvent, setMainActiveContent } from "@/reducers/dashboard/dashboardSlice";
 
 import TooltipOptions from "../tooltip/interfaces/tooltipOptions";
 import EventCardProps from "./interfaces/eventCardProps";
+import EditEventModal from "@/components/modals/modal/editEvent";
 
 const tooltipOptions: TooltipOptions[] = [
     {
@@ -52,15 +53,16 @@ const EventCard = (props: EventCardProps) => {
     const date = eventStartDate.format('D');
     const eventDuration = `${moment.utc(trainingStartDateTime).format('HH:mm')} - ${eventEndDate.format('HH:mm')}`;
     const attendees = participants.length;
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isSuccesModalOpen, setIsSuccesModalOpen] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     const tooltipRef = useRef<HTMLDivElement>(null);
     const dotsRef = useRef<HTMLDivElement>(null);
     const [activeTooltipId, setActiveTooltipId] = useState<string | undefined>('');
     const dispatch = useReducerDispatch();
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isSuccesModalOpen, setIsSuccesModalOpen] = useState(false);
-    const [successMessage, setSuccessMessage] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
 
     const handleDeleteClick = () => {
         setIsModalOpen(true);
@@ -117,11 +119,86 @@ const EventCard = (props: EventCardProps) => {
         }
     };
 
-    const handleEditClick = useCallback(() => {
-        console.log("Editing event:", trainingId);
-        dispatch(setIsEditingEvent(true));
+    // const handleEditClick = useCallback(() => {
+    //     console.log("Editing event:", trainingId);
+    //     setIsEditModalOpen(true);
+    //     // dispatch(setIsEditingEvent(true));
+    //     // dispatch(setMainActiveContent('Create Event'));
+    // }, [trainingId, dispatch]);
+
+
+    // const handleEditOne = useCallback(() => {
+    //     setIsEditingEvent(true);
+    //     setIsEditingFollowingEvent(false);
+    //     setIsEditModalOpen(true);
+    //     dispatch(setIsEditingEvent(true));
+    //     dispatch(setMainActiveContent('Create Event'));
+    //     console.log("Editing single event");
+    // }, [trainingId, dispatch]);
+
+    // const handleEditAll = useCallback(() => {
+    //     setIsEditingEvent(false);
+    //     setIsEditingFollowingEvent(true);
+    //     setIsEditModalOpen(true);
+    //     dispatch(setIsEditingFollowingEvent(true));
+    //     dispatch(setMainActiveContent('Create Event'));
+    //     console.log("Editing this and following events");
+    // }, [trainingId, dispatch]);
+
+    // const handleEdit = useCallback((type: 'one' | 'all' | null) => {
+    //     console.log("Editing event:", trainingId);
+    //     console.log("Type: ✅✅✅", type);
+    //     setIsEditModalOpen(true);
+
+    //     if (type === 'one') {
+    //         setIsEditingEvent(true);
+    //         setIsEditingFollowingEvent(false);
+    //         dispatch(setIsEditingEvent(true));
+    //         console.log("Editing single event");
+    //     } else if (type === 'all') {
+    //         setIsEditingEvent(false);
+    //         setIsEditingFollowingEvent(true);
+    //         dispatch(setIsEditingFollowingEvent(true));
+    //         console.log("Editing this and following events");
+    //     }
+    
+    //     setIsEditModalOpen(true);
+    //     dispatch(setMainActiveContent('Create Event'));
+    // }, [trainingId, dispatch, setIsEditingEvent, setIsEditingFollowingEvent]);
+    
+
+    const handleEdit = useCallback((type: 'one' | 'all' | null) => {
+        console.log("Editing event: ✅✅✅", trainingId);
+        
+        // Make sure to set the active event ID again
+        if (trainingId) {
+            console.log("setting to localStorage ❤️❤️", trainingId);
+            
+            localStorage.setItem('editingEventId', trainingId);
+            dispatch(setActiveEventId(trainingId));
+        }
+        
+        if (type === 'one') {
+            dispatch(setIsEditingEvent(true));
+            dispatch(setIsEditingFollowingEvent(false));
+            console.log("Editing single event");
+        } else if (type === 'all') {
+            dispatch(setIsEditingEvent(false));
+            dispatch(setIsEditingFollowingEvent(true));
+            console.log("Editing this and following events");
+        }
+        
+        // Make sure to set the main active content here
         dispatch(setMainActiveContent('Create Event'));
-    }, [trainingId, dispatch]);
+        
+        // Close the modal
+        setIsEditModalOpen(false);
+    }, [trainingId, dispatch, setIsEditModalOpen]);
+
+    const handleCancel = () => {
+        setIsEditModalOpen(false);
+        console.log("Edit cancelled");
+    };
 
     const handleDuplicateClick = () => {
         console.log("Duplicating event:", trainingId);
@@ -136,7 +213,17 @@ const EventCard = (props: EventCardProps) => {
     const updatedTooltipOptions = tooltipOptions.map(option => {
         switch (option.option) {
             case 'Edit Event':
-                return { ...option, action: handleEditClick };
+                return { 
+                    ...option, 
+                    action: () => {
+                        if (trainingId) {
+                            // Make sure to dispatch this first and wait for it to take effect
+                            dispatch(setActiveEventId(trainingId));
+                        }
+                        setIsEditModalOpen(true);  // Just open the modal, don't call handleEdit yet
+                        setActiveTooltipId('');    // Close tooltip after clicking
+                    }
+                 };
             case 'Attendees':
                 return { ...option, action: handleAttendeesClick };
             case 'Duplicate':
@@ -147,6 +234,7 @@ const EventCard = (props: EventCardProps) => {
                 return option;
         }
     });
+
 
     const handleToggleTooltip = (e: React.MouseEvent, tooltipId: string | undefined) => {
         e.stopPropagation();
@@ -255,6 +343,20 @@ const EventCard = (props: EventCardProps) => {
                     }
                 </div>
             )}
+            {
+                isEditModalOpen && (
+                    <EditEventModal
+                        handleEdit={handleEdit}
+                        isOpen={isEditModalOpen}
+                        onCancel={handleCancel}
+                        onClose={() => {
+                            setIsEditModalOpen(false);
+                            setActiveTooltipId('');
+                        }}
+                    />
+                )
+            }
+
             {isModalOpen && (
                 <Modal
                     onClose={() => {

@@ -4,7 +4,7 @@ import { memo, useCallback, useEffect, useState } from "react";
 
 import useReducerDispatch from "@/hooks/useReducerDispatch";
 import useSliceSelector from "@/hooks/useSliceSelector";
-import { addOrUpdateEvent, setActiveEventId, setIsEditingEvent, setMainActiveContent, setSelectedDate } from "@/reducers/dashboard/dashboardSlice";
+import { addOrUpdateEvent, setActiveEventId, setIsEditingEvent,setIsEditingFollowingEvent, setMainActiveContent, setSelectedDate } from "@/reducers/dashboard/dashboardSlice";
 import { currencies } from "../subscriptions/subscriptions";
 
 import EventContent from "../eventContent/eventContent";
@@ -16,6 +16,7 @@ import Event from "@/app/models/Event";
 import DescriptionField from "../common/descriptionFields/interfaces/descriptionField";
 import ModalContent from "../modals/modal/interfaces/modalContent";
 import { HOME_URL } from "../homeComponent/homeComponent";
+import axios from "axios";
 
 interface CreateEventProps {
     fetchEvents: () => Promise<void>;
@@ -55,7 +56,7 @@ const CreateEvent = (props: CreateEventProps) => {
     });
     const [isErrModal, setIsErrModal] = useState(false);
     const [isOnline, setIsOnline] = useState(false);
-    const [meetLink,setMeetLink] = useState("");
+    const [meetLink, setMeetLink] = useState("");
     const [modalContent, setModalContent] = useState<ModalContent>({
         iconSrc: '',
         title: '',
@@ -67,11 +68,37 @@ const CreateEvent = (props: CreateEventProps) => {
     const uid = userDetails.uid;
     const allEvents = useSliceSelector(state => state.dashboard.allEvents);
     const isEditingEvent = useSliceSelector(state => state.dashboard.isEditingEvent);
+    const isEditingFollowingEvent = useSliceSelector(state => state.dashboard.isEditingFollowingEvent)
     const activeEventId = useSliceSelector(state => state.dashboard.activeEventId);
     const subscriptions = useSliceSelector(state => state.dashboard.subscriptions);
     const [eventId, setEventId] = useState<string | undefined>();
+    const [sessionId,setSessionId] = useState("");
+
     const dispatch = useReducerDispatch();
 
+
+    useEffect(() => {
+        console.log("Prefill effect triggered");
+        console.log("isEditingEvent:", isEditingEvent);
+        console.log("isEditingFollowingEvent:", isEditingFollowingEvent);
+        console.log("activeEventId:", activeEventId);
+        console.log("allEvents length:", allEvents.length);
+        
+        if ((isEditingEvent || isEditingFollowingEvent) && allEvents.length) {
+            const eventToEdit = allEvents.find(event => event.trainingId === activeEventId);
+            console.log("Event to edit found:", !!eventToEdit);
+            
+            if (eventToEdit) {
+                console.log("Running prefill with event:", eventToEdit.title);
+                prefillForm(eventToEdit);
+                setActiveEvent(eventToEdit);
+            }
+        } else {
+            console.log("Running reset form");
+            resetForm();
+        }
+    }, [activeEventId, allEvents, isEditingEvent, isEditingFollowingEvent]);
+    
     const subscriptionsAllowed = subscriptions.length > 0
         ? subscriptions.map(subscription => subscription.subscriptionId).filter((id): id is string => id !== undefined)
         : [];
@@ -93,6 +120,7 @@ const CreateEvent = (props: CreateEventProps) => {
         );
         // const subLength = eventData.subscriptionsAllowed && eventData.subscriptionsAllowed.length > 0;
         setEventId(eventData.trainingId);
+        setSessionId(eventData.sessionId || "")
         setAddress(eventData.trainingLocationString);
         setCity(eventData.trainingLocationString);
         setTitle(eventData.title);
@@ -114,24 +142,49 @@ const CreateEvent = (props: CreateEventProps) => {
         setSelectedDropdownOption(eventRepeatOption);
         setSelectedImages(combinedImages);
         console.log("eventData.trainingLocation.coordinates ✨✨", eventData.trainingLocation.coordinates);
-        
+
         setPosition({
             lat: eventData.trainingLocation.coordinates[0],
             lng: eventData.trainingLocation.coordinates[1],
         });
     };
 
+    // useEffect(() => {
+    //     if ((isEditingEvent || isEditingFollowingEvent) && allEvents.length) {
+    //         const eventToEdit = allEvents.find(event => event.trainingId === activeEventId);
+    //         if (eventToEdit) {
+    //             prefillForm(eventToEdit);
+    //             setActiveEvent(eventToEdit);
+    //         }
+    //     } else {
+    //         resetForm();
+    //     }
+    // }, [activeEventId, allEvents, isEditingEvent, isEditingFollowingEvent]);
+    
     useEffect(() => {
-        if (isEditingEvent && allEvents.length) {
-            const eventToEdit = allEvents.find(event => event.trainingId === activeEventId);
+        // Check for stored event ID from localStorage
+        const storedEventId = localStorage.getItem('editingEventId');
+        console.log("Stored event ID from localStorage:✨✨", storedEventId);
+        
+        if (storedEventId && (isEditingEvent || isEditingFollowingEvent) && allEvents.length) {
+            console.log("Found stored event ID:", storedEventId);
+            const eventToEdit = allEvents.find(event => event.trainingId === storedEventId);
+            
             if (eventToEdit) {
+                console.log("Found event to edit from localStorage ID");
                 prefillForm(eventToEdit);
                 setActiveEvent(eventToEdit);
+                
+                // Also update the active event ID in the store
+                dispatch(setActiveEventId(storedEventId));
             }
-        } else {
-            resetForm();
         }
-    }, [activeEventId, allEvents, isEditingEvent]);
+        
+        // Clear the stored ID after use
+        return () => {
+            localStorage.removeItem('editingEventId');
+        };
+    }, [isEditingEvent, isEditingFollowingEvent, allEvents, dispatch]);
 
     const resetForm = () => {
         setAddress("Carrer de Sant Quintí, 33, Barcelona");
@@ -304,7 +357,7 @@ const CreateEvent = (props: CreateEventProps) => {
             repeatEventFrequency: repeatEventFrequency,
             commentCount: 0,
             comments: [],
-            sessionId: "",
+            sessionId: sessionId || "",
             isOnline,
             meetLink,
             createdAt: new Date().toISOString(),
@@ -312,40 +365,105 @@ const CreateEvent = (props: CreateEventProps) => {
         };
 
         console.log("eventData ✨✨✨", eventData);
-        
+
         try {
-            const method = isEditingEvent ? "PUT" : "POST";
-            const url = isEditingEvent ? `${HOME_URL}event/` : `${HOME_URL}event/repeating`;
-            const response = await fetch(url, {
-                method,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(eventData)
-            });
-            console.log("response ✨✨", response);
+            let method, url;
+            console.log("this is isEditingFollowingEvent ✨✨", isEditingFollowingEvent);
+            console.log("this is isEditingEvent ✨✨", isEditingEvent);
+            console.log("this is eventId ✨✨", eventId);
             
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(errorText);
+            if (isEditingFollowingEvent) {
+                method = "PUT";
+                url = `${HOME_URL}event/updateBulk`;
+            } else if (isEditingEvent) {
+                method = "PUT";
+                url = `${HOME_URL}event/`;
+            } else {
+                method = "POST";
+                url = `${HOME_URL}event/repeating`;
             }
-
-            await response.json();
-            setModalContent({
-                iconSrc: '/static/checkmark.svg',
-                title: isEditingEvent ? "Event Updated!" : "Event Published!",
-                description: isEditingEvent ? 'Your event has been updated!' : 'Your event has been published!',
-                buttonText: 'Done',
-            });
-            setIsModalOpen(true);
-            dispatch(addOrUpdateEvent(eventData));
-            if (isEditingEvent) dispatch(setIsEditingEvent(false));
-            setIsLoading(false);
-
+        
+            let response;
+        
+            if (url.includes("updateBulk")) {
+                console.log("updating in bulk ");
+                
+                response = await axios.put(url, {
+                    sessionId: sessionId,
+                    currDateTime: new Date().toISOString(),
+                    updatedEvent: eventData,
+                });
+                console.log("Response ✨✨", response);
+        
+                setModalContent({
+                    iconSrc: '/static/checkmark.svg',
+                    title: "Events Updated!",
+                    description: 'All selected events have been updated!',
+                    buttonText: 'Done',
+                });
+                setIsModalOpen(true);
+                dispatch(addOrUpdateEvent(eventData));
+                dispatch(setIsEditingFollowingEvent(false));
+            } else {
+                response = await fetch(url, {
+                    method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(eventData),
+                });
+        
+                console.log("Response ✨✨", response);
+        
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText);
+                }
+        
+                await response.json();
+        
+                setModalContent({
+                    iconSrc: '/static/checkmark.svg',
+                    title: isEditingEvent ? "Event Updated!" : "Event Published!",
+                    description: isEditingEvent
+                        ? 'Your event has been updated!'
+                        : 'Your event has been published!',
+                    buttonText: 'Done',
+                });
+                setIsModalOpen(true);
+                dispatch(addOrUpdateEvent(eventData));
+                if (isEditingEvent) dispatch(setIsEditingEvent(false));
+            }
         } catch (error) {
-            console.error('Error creating event:', error);
+            console.error('Error creating/updating event:', error);
+        } finally {
+            setIsLoading(false);
         }
+        
+
     };
+
+    // const handleFollowingEventUpdate = async (sessionId: string, currDateTime: Date, eventData: Event) => {
+    //     try {
+    //         const path = `${HOME_URL}/event/updateBulk`
+    //         const response = await axios.put(path, {
+    //             sessionId,
+    //             currDateTime: new Date().toISOString(),
+    //             updatedEvent: eventData
+    //         })
+
+    //         console.log("thisi is response ", response);
+
+    //         if (response.status >= 200 && response.status < 300) {
+    //             return { data: true };
+    //         } else {
+    //             return { data: false };
+    //         }
+    //     } catch (error) {
+    //         console.error('Error creating event:', error);
+
+    //     }
+    // }
 
     const closeModal = () => {
         setIsModalOpen(false);
@@ -358,7 +476,6 @@ const CreateEvent = (props: CreateEventProps) => {
         setIsModalOpen(false);
         dispatch(setMainActiveContent('Calendar'));
         await fetchEvents();
-        dispatch(setActiveEventId(''));
         dispatch(setSelectedDate(''));
     };
 
@@ -468,5 +585,8 @@ const CreateEvent = (props: CreateEventProps) => {
         </SidebarLayout>
     )
 }
+
+
+  
 
 export default memo(CreateEvent);

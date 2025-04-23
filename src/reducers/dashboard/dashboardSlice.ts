@@ -15,6 +15,7 @@ interface DashboardState {
     pastEventsContainerClass: string;
     activeEventId: string;
     isEditingEvent: boolean;
+    isEditingFollowingEvent: boolean;
     isLoading: boolean;
     userDetails: Pick<Creator, 'uid' | 'email' | 'mainProfilePhoto' | 'name'> & { connectedAccountId?: string };
     notifications: NotificationData[];
@@ -33,6 +34,7 @@ const initialState: DashboardState = {
     pastEventsContainerClass: 'h-auto',
     activeEventId: '',
     isEditingEvent: false,
+    isEditingFollowingEvent: false,
     isLoading: true,
     userDetails: {
         uid: '',
@@ -85,6 +87,9 @@ const dashboardSlice = createSlice({
         },
         setIsEditingEvent(state, action: PayloadAction<boolean>) {
             state.isEditingEvent = action.payload;
+        },
+        setIsEditingFollowingEvent(state, action: PayloadAction<boolean>) {
+            state.isEditingFollowingEvent = action.payload;
         },
         setAttendeesIds(state, action: PayloadAction<string[]>) {
             state.attendeesIds = action.payload;
@@ -141,6 +146,7 @@ export const {
     setPastEventsContainerClass,
     setActiveEventId,
     setIsEditingEvent,
+    setIsEditingFollowingEvent,
     setIsLoading,
     setUserDetails,
     setNotifications,

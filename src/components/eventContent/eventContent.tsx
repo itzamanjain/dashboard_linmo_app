@@ -68,6 +68,9 @@ const EventContent = (props: EventContentProps) => {
     const [selectedCurrency, setSelectedCurrency] = useState<CurrenciesInterface>(currencies[1]);
     const dropdownRef = useRef<HTMLDivElement | null>(null);
     const [locationType, setLocationType] = useState<"inperson" | "online">("inperson")
+    const isEditingEvent = useSliceSelector(state => state.dashboard.isEditingEvent);
+    const isEditingFollowingEvent = useSliceSelector(state => state.dashboard.isEditingFollowingEvent);
+ 
     // const [isOnline, setIsOnline] = useState(false);
     // const [address, setAddress] = useState("")
     // const [meetLink, setMeetLink] = useState("")
@@ -224,23 +227,28 @@ const EventContent = (props: EventContentProps) => {
 
                         <div className="flex rounded-lg bg-[#1F1F1F] overflow-hidden">
                             <button
-                                onClick={() => setLocationType("inperson")}
+                                onClick={() => {
+                                    if (isEditingEvent || isEditingFollowingEvent) return;
+                                    setLocationType("inperson");
+                                }}
                                 className={cn(
                                     "flex-1 py-3 text-center font-semibold transition-colors",
                                     locationType === "inperson" ? "bg-white rounded-2xl text-black" : "text-white",
+                                    (isEditingEvent || isEditingFollowingEvent) && "opacity-50 cursor-not-allowed"
                                 )}
                             >
                                 In Person
                             </button>
                             <button
                                 onClick={() => {
+                                    if (isEditingEvent || isEditingFollowingEvent) return;
                                     setLocationType("online");
                                     setIsOnline(true);
-
                                 }}
                                 className={cn(
                                     "flex-1 py-3 text-center font-semibold transition-colors",
                                     locationType === "online" ? "bg-white rounded-2xl text-black" : "text-white",
+                                    (isEditingEvent || isEditingFollowingEvent) && "opacity-50 cursor-not-allowed"
                                 )}
                             >
                                 Online
@@ -268,7 +276,7 @@ const EventContent = (props: EventContentProps) => {
                         ) : (
                             <div className="relative">
                                 <div className="flex items-center font-normal text-sm leading-custom-22 bg-black text-white rounded-xl
-                    border border-darkMetal py-3 px-4 placeholder:text-darkgray focus:outline-none opacity-90 w-full bg-gray-800 ">
+                border border-darkMetal py-3 px-4 placeholder:text-darkgray focus:outline-none opacity-90 w-full bg-gray-800 ">
                                     <Link width={16} height={16} className="mr-2 text-white" />
                                     <input
                                         type="url"
@@ -280,9 +288,8 @@ const EventContent = (props: EventContentProps) => {
                                 </div>
                             </div>
                         )}
-
-
                     </div>
+
                     <div className="flex flex-col gap-4">
                         <h3 className="text-white text-lg font-semibold leading-6">Category</h3>
                         <Categories
@@ -437,10 +444,10 @@ const EventContent = (props: EventContentProps) => {
                                             width={24}
                                             height={24}
                                         /> */}
-                                        <Gem 
+                                        <Gem
                                             width={24}
-                                            height={24} 
-                                            className="text-white" 
+                                            height={24}
+                                            className="text-white"
                                         />
                                         <h3 className="font-semibold text-base leading-6 text-white">
                                             {sub.subscriptionName}
