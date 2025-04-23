@@ -7,10 +7,11 @@ import Modal from '@/components/modals/modal/modal';
 
 import useReducerDispatch from '@/hooks/useReducerDispatch';
 import useSliceSelector from '@/hooks/useSliceSelector';
-import { removeEvent, setActiveContent, setActiveEventId, setAttendeesIds, setIsEditingEvent, setMainActiveContent } from '@/reducers/dashboard/dashboardSlice';
+import { removeEvent, setActiveContent, setActiveEventId, setAttendeesIds, setIsEditingEvent, setIsEditingFollowingEvent, setMainActiveContent } from '@/reducers/dashboard/dashboardSlice';
 
 import Event from '@/app/models/Event';
 import TooltipOptions from '../tooltip/interfaces/tooltipOptions';
+import EditEventModal from '@/components/modals/modal/editEvent';
 
 const tooltipOptions: TooltipOptions[] = [
     {
@@ -62,6 +63,8 @@ const WeeklyCalendar = ({ upcomingEvents }: { upcomingEvents: Event[] }) => {
     const attendeesIds = activeEvent ? activeEvent.participants : [];
     const isSmallScreen = window.innerWidth < 640;
     const multiplier = isSmallScreen ? 55 : 110;
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
 
     const confirmDelete = async () => {
         try {
@@ -94,6 +97,40 @@ const WeeklyCalendar = ({ upcomingEvents }: { upcomingEvents: Event[] }) => {
         dispatch(setMainActiveContent('Create Event'));
     }, [activeEventId, dispatch]);
 
+    
+        const handleEdit = useCallback((type: 'one' | 'all' | null) => {
+            console.log("Editing event: ✅✅✅", activeEventId);
+            
+            // Make sure to set the active event ID again
+            if (activeEventId) {
+                console.log("setting to localStorage ❤️❤️", activeEventId);
+                
+                localStorage.setItem('editingEventId', activeEventId);
+                dispatch(setActiveEventId(activeEventId));
+            }
+            
+            if (type === 'one') {
+                dispatch(setIsEditingEvent(true));
+                dispatch(setIsEditingFollowingEvent(false));
+                console.log("Editing single event");
+            } else if (type === 'all') {
+                dispatch(setIsEditingEvent(false));
+                dispatch(setIsEditingFollowingEvent(true));
+                console.log("Editing this and following events");
+            }
+            
+            // Make sure to set the main active content here
+            dispatch(setMainActiveContent('Create Event'));
+            
+            // Close the modal
+            setIsEditModalOpen(false);
+        }, [activeEventId, dispatch, setIsEditModalOpen]);
+    
+        const handleCancel = () => {
+            setIsEditModalOpen(false);
+            console.log("Edit cancelled");
+        };
+
     const handleDuplicateClick = () => {
         console.log("Duplicating event:", activeEventId);
     };
@@ -107,7 +144,17 @@ const WeeklyCalendar = ({ upcomingEvents }: { upcomingEvents: Event[] }) => {
     const updatedTooltipOptions = tooltipOptions.map(option => {
         switch (option.option) {
             case 'Edit Event':
-                return { ...option, action: handleEditClick };
+                return { 
+                    ...option, 
+                    action: () => {
+                        if (activeEventId) {
+                            // Make sure to dispatch this first and wait for it to take effect
+                            dispatch(setActiveEventId(activeEventId));
+                        }
+                        setIsEditModalOpen(true);  // Just open the modal, don't call handleEdit yet
+                        setActiveTooltipId('');    // Close tooltip after clicking
+                    }
+                 };
             case 'Attendees':
                 return { ...option, action: handleAttendeesClick };
             case 'Duplicate':
@@ -475,6 +522,20 @@ const WeeklyCalendar = ({ upcomingEvents }: { upcomingEvents: Event[] }) => {
                     </div>
                 </div>
             </div>
+            {
+                            isEditModalOpen && (
+                                <EditEventModal
+                                    handleEdit={handleEdit}
+                                    isOpen={isEditModalOpen}
+                                    onCancel={handleCancel}
+                                    onClose={() => {
+                                        setIsEditModalOpen(false);
+                                        setActiveTooltipId('');
+                                    }}
+                                />
+                            )
+                        }
+
             {isModalOpen && (
                 <Modal
                     onClose={() => {
