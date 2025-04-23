@@ -16,7 +16,7 @@ import Creator from "@/app/models/Creator";
 import { getStripeAccount } from "../../../stripeConfig";
 import { HOME_URL } from "../homeComponent/homeComponent";
 import axios from "axios";
-import { Loader2 } from "lucide-react";
+import { Gift, Info, Loader2, PlusCircle } from "lucide-react";
 
 export const currencies: CurrenciesInterface[] = [
     {
@@ -64,9 +64,9 @@ const Subscriptions = () => {
     const user = useSliceSelector((state => state.dashboard.userDetails));
     const userId = user.uid;
     console.log("user ", user);
-    const [connectedAccountId,setConnectedAccountId] = useState("");
-    const [connectedAccountStatus,setConnectedAccountStatus] = useState("");
-    
+    const [connectedAccountId, setConnectedAccountId] = useState("");
+    const [connectedAccountStatus, setConnectedAccountStatus] = useState("");
+
     const dropdownOnClose = useCallback(() => setIsDurationDropdownOpen(false), [setIsDurationDropdownOpen]);
     const incrementCredits = useCallback(() => setMaxCredits(prev => prev + 1), [setMaxCredits]);
     const decrementCredits = useCallback(() => setMaxCredits(prev => Math.max(prev - 1, 1)), [setMaxCredits]);
@@ -92,13 +92,13 @@ const Subscriptions = () => {
     };
 
     useEffect(() => {
-        if(user.connectedAccountId) {
+        if (user.connectedAccountId) {
             setConnectedAccountId(user.connectedAccountId);
         }
-    },[])
+    }, [])
 
     console.log("connectedAccountId ", connectedAccountId);
-    
+
 
     const handleCreateSub = async () => {
         try {
@@ -164,13 +164,13 @@ const Subscriptions = () => {
         setIsLoading(true)
         const path = `${HOME_URL}/payments/getOnboardingStatus`;
         try {
-            const response = await axios.post(path,{
+            const response = await axios.post(path, {
                 connectedAccountId
             })
-            console.log("this is response canCreateSub",response);
+            console.log("this is response canCreateSub", response);
             setConnectedAccountStatus(response.data.status);
 
-            if(response.data.status != "completed"){
+            if (response.data.status != "completed") {
                 setModalContent({
                     iconSrc: '/static/caution.svg',
                     title: 'Your Account Is not Connect!',
@@ -179,12 +179,12 @@ const Subscriptions = () => {
                 });
                 setIsModalOpen(true);
             }
-           
-            
+
+
         } catch (error) {
-            console.log("something went wrong while checking canCreateSubscription",error);
-            
-        }finally{
+            console.log("something went wrong while checking canCreateSubscription", error);
+
+        } finally {
             setIsLoading(false)
         }
 
@@ -193,7 +193,7 @@ const Subscriptions = () => {
 
     useEffect(() => {
         canCreateSubscription();
-    },[connectedAccountId])
+    }, [connectedAccountId])
 
     const handleSaveSubscription = useCallback(async () => {
         if (!title) {
@@ -296,10 +296,10 @@ const Subscriptions = () => {
     }, [dispatch]);
 
     const createSubscription = async (subscription: SubscriptionModel) => {
-        if(connectedAccountId === "") return ;
+        if (connectedAccountId === "") return;
 
         try {
-            
+
             const response = await fetch('https://prod-ts-liveliness-server.onrender.com/api/subscriptions/create/new', {
                 method: 'POST',
                 headers: {
@@ -313,7 +313,7 @@ const Subscriptions = () => {
             }
 
             const result = await response.json();
-            console.log("",result);
+            console.log("", result);
 
             setModalContent({
                 iconSrc: '/static/caution.svg',
@@ -398,7 +398,7 @@ const Subscriptions = () => {
             </div>
         );
     }
-    
+
 
     return (
         <div className={`flex flex-col gap-[1.563rem] pt-12 p-4 lg:px-8 lg:pt-14 pb-2 
@@ -501,6 +501,7 @@ const Subscriptions = () => {
                         </button>
                     </>
                 )}
+                
             </div>
             {isCreateSubs && (
                 <SubscriptionForm
@@ -531,6 +532,47 @@ const Subscriptions = () => {
                     dropdownOnClose={dropdownOnClose}
                 />
             )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+                    {/* Card 1 */}
+                    <div className="bg-neutral-800 text-white p-4 rounded-xl">
+                        <div className="flex items-start gap-2">
+                            <PlusCircle className="text-white text-lg" />
+                            <div>
+                                <h3 className="font-semibold">How to create a membership</h3>
+                                <p className="text-sm text-neutral-300">
+                                    Paid membership for a club is a subscription that provides access to the club’s facilities, activities, and services in exchange for a fee.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Card 2 */}
+                    <div className="bg-neutral-800 text-white p-4 rounded-xl">
+                        <div className="flex items-start gap-2">
+                            <Gift className="text-white text-lg" />
+                            <div>
+                                <h3 className="font-semibold">Class Packs vs. Memberships: A Quick Comparison</h3>
+                                <p className="text-sm text-neutral-300">
+                                    Why you should offer memberships instead of class packs.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Card 3 - Full width on large screens */}
+                    <div className="bg-neutral-800 text-white p-4 rounded-xl md:col-span-2">
+                        <div className="flex items-start gap-2">
+                            <Info className="text-white text-lg" />
+                            <div>
+                                <h3 className="font-semibold">Cancellation Policy</h3>
+                                <p className="text-sm text-neutral-300">
+                                    Refunds are only available for memberships. If a user cancels at least 24 hours before the event, the credit will be returned to their account. One-time payments are non-refundable.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             {isCurrencymodal && (
                 <CurrencyModal
                     currencies={currencies}
