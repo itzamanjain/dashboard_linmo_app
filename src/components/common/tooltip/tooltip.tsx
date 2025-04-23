@@ -22,7 +22,7 @@ const Tooltip = (props: TooltipProps) => {
                             onClick={(e) => {
                                 e.stopPropagation();
                                 if (item.action) {
-                                    item.action();
+                                    item.action(null);
                                 }
                             }}
                         >

@@ -2,20 +2,21 @@
 
 type EditEventModalProps = {
     handleEdit: (type: 'one' | 'all' | null) => void;
-    onCancel: () => void
+    onCancel: () => void;
     isOpen: boolean;
-    onClose?: () => void
-}
+    onClose?: () => void;
+};
 
-export default function EditEventModal({ isOpen,handleEdit,onClose}: EditEventModalProps) {
+export default function EditEventModal({
+    isOpen,
+    handleEdit,
+    onClose,
+}: EditEventModalProps) {
     if (!isOpen) return null;
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="relative bg-black p-6 rounded-3xl w-[90%] max-w-sm text-center text-white overflow-hidden">
-                {/* Green curved accent */}
-
-                {/* Content */}
+            <div className="relative bg-black md:bg-[#111111] p-6 rounded-3xl w-[90%] max-w-sm md:max-w-md md:w-[500px] md:h-[450px] text-center text-white overflow-hidden">
                 <div className="relative z-10">
                     {/* Icon at the top */}
                     <div className="flex justify-center mb-4">
@@ -65,11 +66,9 @@ export default function EditEventModal({ isOpen,handleEdit,onClose}: EditEventMo
                                 </div>
                                 <div className="flex flex-col">
                                     <span className="text-left font-medium">This event only</span>
-                                    <span className="text-xs text-gray-400">Edit just on this event</span>
+                                    <span className="text-xs text-gray-400">Edit just this event</span>
                                 </div>
-
                             </div>
-
                         </button>
 
                         {/* This and following events button */}
@@ -94,13 +93,11 @@ export default function EditEventModal({ isOpen,handleEdit,onClose}: EditEventMo
                                         />
                                     </svg>
                                 </div>
-                                <div className="flex flex-col">
-                                    <span className="text-left font-medium">This and following events</span>
+                                <div className="flex flex-col text-left">
+                                    <span className="font-medium">This and following events</span>
                                     <span className="text-xs text-gray-400">will edit all the following events</span>
                                 </div>
-
                             </div>
-
                         </button>
                     </div>
 
@@ -114,5 +111,5 @@ export default function EditEventModal({ isOpen,handleEdit,onClose}: EditEventMo
                 </div>
             </div>
         </div>
-    )
+    );
 }
