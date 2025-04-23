@@ -15,4 +15,5 @@ export default interface SubscriptionModel {
     currency: string;
     stripeProductId: string;
     stripePriceId: string;
+    connectedAccountId: string;
 }

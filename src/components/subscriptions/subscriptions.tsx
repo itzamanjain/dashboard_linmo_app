@@ -14,6 +14,9 @@ import CurrenciesInterface from "./interfaces/currenciesInterface";
 import ModalContent from "../modals/modal/interfaces/modalContent";
 import Creator from "@/app/models/Creator";
 import { getStripeAccount } from "../../../stripeConfig";
+import { HOME_URL } from "../homeComponent/homeComponent";
+import axios from "axios";
+import { Loader2 } from "lucide-react";
 
 export const currencies: CurrenciesInterface[] = [
     {
@@ -60,7 +63,10 @@ const Subscriptions = () => {
     const adminClubId = useSliceSelector(state => state.dashboard.adminClubId);
     const user = useSliceSelector((state => state.dashboard.userDetails));
     const userId = user.uid;
-
+    console.log("user ✨✨✨", user);
+    const [connectedAccountId,setConnectedAccountId] = useState("");
+    const [connectedAccountStatus,setConnectedAccountStatus] = useState("");
+    
     const dropdownOnClose = useCallback(() => setIsDurationDropdownOpen(false), [setIsDurationDropdownOpen]);
     const incrementCredits = useCallback(() => setMaxCredits(prev => prev + 1), [setMaxCredits]);
     const decrementCredits = useCallback(() => setMaxCredits(prev => Math.max(prev - 1, 1)), [setMaxCredits]);
@@ -84,6 +90,15 @@ const Subscriptions = () => {
     const handleDone = () => {
         setIsModalOpen(false);
     };
+
+    useEffect(() => {
+        if(user.connectedAccountId) {
+            setConnectedAccountId(user.connectedAccountId);
+        }
+    },[])
+
+    console.log("connectedAccountId 🙄🙄🙄🙄", connectedAccountId);
+    
 
     const handleCreateSub = async () => {
         try {
@@ -145,6 +160,41 @@ const Subscriptions = () => {
         setIsCheckSubModalOpen(false);
     };
 
+    const canCreateSubscription = async () => {
+        setIsLoading(true)
+        const path = `${HOME_URL}/payments/getOnboardingStatus`;
+        try {
+            const response = await axios.post(path,{
+                connectedAccountId
+            })
+            console.log("this is response 👍👍👍 from canCreateSub",response);
+            setConnectedAccountStatus(response.data.status);
+
+            if(response.data.status != "completed"){
+                setModalContent({
+                    iconSrc: '/static/caution.svg',
+                    title: 'Your Account Is not Connect!',
+                    description: 'You cant create memenerships!',
+                    buttonText: 'Done',
+                });
+                setIsModalOpen(true);
+            }
+           
+            
+        } catch (error) {
+            console.log("something went wrong while checking canCreateSubscription",error);
+            
+        }finally{
+            setIsLoading(false)
+        }
+
+    }
+
+
+    useEffect(() => {
+        canCreateSubscription();
+    },[connectedAccountId])
+
     const handleSaveSubscription = useCallback(async () => {
         if (!title) {
             setModalContent({
@@ -202,7 +252,8 @@ const Subscriptions = () => {
             intervalType: selectedDurationOption.toLowerCase() || 'month',
             currency: selectedCurrency.name || currencies[1].name,
             stripePriceId: '',
-            stripeProductId: ''
+            stripeProductId: '',
+            connectedAccountId: connectedAccountId || "",
         };
 
         await createSubscription(newSubscription);
@@ -245,8 +296,11 @@ const Subscriptions = () => {
     }, [dispatch]);
 
     const createSubscription = async (subscription: SubscriptionModel) => {
+        if(connectedAccountId === "") return ;
+
         try {
-            const response = await fetch('https://prod-ts-liveliness-server.onrender.com/api/subscriptions', {
+            
+            const response = await fetch('https://prod-ts-liveliness-server.onrender.com/api/subscriptions/create/new', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -259,7 +313,7 @@ const Subscriptions = () => {
             }
 
             const result = await response.json();
-            console.log(result);
+            console.log("",result);
 
             setModalContent({
                 iconSrc: '/static/caution.svg',
@@ -336,6 +390,15 @@ const Subscriptions = () => {
             setSelectedCurrency(currencies[1]);
         }
     }, [subscriptions]);
+
+    if (isLoading) {
+        return (
+            <div className="flex">
+                <Loader2 className="animate-spin text-center w-6 h-6 text-white" />
+            </div>
+        );
+    }
+    
 
     return (
         <div className={`flex flex-col gap-[1.563rem] pt-12 p-4 lg:px-8 lg:pt-14 pb-2 
