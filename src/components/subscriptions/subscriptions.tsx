@@ -273,6 +273,12 @@ const Subscriptions = () => {
         window.open("https://dashboard.stripe.com/register", "_blank");
     }
 
+    const subscriptionTypes: Record<string, string> = {
+        "every month": "Monthly Membership",
+        "every year": "Yearly Membership",
+      };
+      
+
     const resetForm = () => {
         setIsCreateSubs(false);
         setEditingIndex(null);
@@ -465,7 +471,10 @@ const Subscriptions = () => {
                                                 width={24}
                                                 height={24}
                                             />
+                                            <div className="flex flex-col gap-1">
                                             <h3 className="text-white font-semibold text-base leading-6">{sub.subscriptionName}</h3>
+                                            <h3 className="text-[#F0FF99] font-normal text-[14px] leading-6"> {subscriptionTypes[sub.intervalType] || "Unknown Membership"}</h3>
+                                            </div>
                                         </div>
                                         <div className="flex justify-center items-center">
                                             <Image
