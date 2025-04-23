@@ -361,7 +361,7 @@ const CreateEvent = (props: CreateEventProps) => {
             isOnline,
             meetLink,
             createdAt: new Date().toISOString(),
-            ...(isEditingEvent && { trainingId: eventId })
+            ...((isEditingEvent || isEditingFollowingEvent) && { trainingId: eventId })
         };
 
         console.log("eventData ✨✨✨", eventData);
