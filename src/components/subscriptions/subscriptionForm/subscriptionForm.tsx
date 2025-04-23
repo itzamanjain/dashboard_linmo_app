@@ -257,6 +257,18 @@ const SubscriptionForm = (props: SubscriptionFormProps) => {
                     )}
                 </div>
             </div>
+            <div className="bg-neutral-900 text-white border border-purple-400 rounded-xl p-4">
+                <ul className="list-disc pl-5 space-y-2 text-sm text-neutral-300">
+                    <li>1 Credit = 1 Event/Class Booking</li>
+                    <li>
+                        With unlimited credits, user can book as much as they want until their membership expires.
+                    </li>
+                    <li>
+                        It renews automatically, but unused credits won’t accumulate.
+                    </li>
+                </ul>
+            </div>
+
             <div className="flex gap-4 justify-end">
                 <button
                     className="bg-darkMetal px-4 py-2 text-white font-bold text-sm leading-custom-22 rounded-[0.625rem]"
