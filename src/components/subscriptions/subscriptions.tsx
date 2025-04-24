@@ -17,6 +17,7 @@ import { getStripeAccount } from "../../../stripeConfig";
 import { HOME_URL } from "../homeComponent/homeComponent";
 import axios from "axios";
 import { Gift, Info, Loader2, PlusCircle } from "lucide-react";
+import Link from "next/link";
 
 export const currencies: CurrenciesInterface[] = [
     {
@@ -190,7 +191,8 @@ const Subscriptions = () => {
 
     }
 
-
+    console.log("subscriptions ✨✨✨",subscriptions);
+    
     useEffect(() => {
         canCreateSubscription();
     }, [connectedAccountId])
@@ -276,8 +278,8 @@ const Subscriptions = () => {
     const subscriptionTypes: Record<string, string> = {
         "every month": "Monthly Membership",
         "every year": "Yearly Membership",
-      };
-      
+    };
+
 
     const resetForm = () => {
         setIsCreateSubs(false);
@@ -423,11 +425,11 @@ const Subscriptions = () => {
                 </div>
             </div>
             <div className="flex flex-col gap-4">
-                <h3 className="text-white font-semibold text-lg leading-6">Select your currency</h3>
+                <h3 className="text-green font-semibold text-lg leading-6">1. Select your currency</h3>
                 <p className="text-buff font-normal text-sm leading-custom-22">
                     *The currency cannot be changed once the subscription is created.
                 </p>
-                <div className="flex justify-between bg-ash rounded-[10px] p-3 items-center">
+                <div className="flex justify-between bg-neutral-800 rounded-[10px] p-3 items-center">
                     <div className="flex gap-3">
                         <Image
                             src={"/static/coins.svg"}
@@ -464,16 +466,17 @@ const Subscriptions = () => {
                                         key={index}
                                         className="flex justify-between bg-darkMetal rounded-[10px] p-3 items-center"
                                     >
-                                        <div className="flex gap-3">
-                                            <Image
+                                        <div className="flex">
+                                            {/* <Image
                                                 src={"/static/gift.svg"}
                                                 alt={"sub"}
                                                 width={24}
                                                 height={24}
-                                            />
-                                            <div className="flex flex-col gap-1">
-                                            <h3 className="text-white font-semibold text-base leading-6">{sub.subscriptionName}</h3>
-                                            <h3 className="text-[#F0FF99] font-normal text-[14px] leading-6"> {subscriptionTypes[sub.intervalType] || "Unknown Membership"}</h3>
+                                            /> */}
+                                            <div className="flex flex-col gap-0.5">
+                                                <h3 className="text-[#C8C8C8] font-normal text-base leading-6">{sub.subscriptionName}</h3>
+                                                <h3 className="text-white font-semibold text-base leading-6">{sub.currency === 'eur' ? '€' : '$'} {sub.price} / 1 credit</h3>
+                                                <h3 className="text-[#F0FF99] font-normal text-[14px] leading-6"> {subscriptionTypes[sub.intervalType] || "Unknown Membership"}</h3>
                                             </div>
                                         </div>
                                         <div className="flex justify-center items-center">
@@ -494,7 +497,7 @@ const Subscriptions = () => {
                 )}
                 {!isCreateSubs && subscriptions.length <= 2 && (
                     <>
-                        <h3 className="text-green font-bold text-lg leading-6">Create your club membership</h3>
+                        <h3 className="text-green font-bold text-lg leading-6">2. Create your club membership</h3>
                         <button
                             type="button"
                             className="w-max flex gap-2 border border-darkMetal bg-black px-4 py-2 rounded-[10px] text-white text-sm leading-custom-22 font-bold"
@@ -506,11 +509,11 @@ const Subscriptions = () => {
                                 width={16}
                                 height={16}
                             />
-                            Create Membership
+                            Create Subscription
                         </button>
                     </>
                 )}
-                
+
             </div>
             {isCreateSubs && (
                 <SubscriptionForm
@@ -541,31 +544,38 @@ const Subscriptions = () => {
                     dropdownOnClose={dropdownOnClose}
                 />
             )}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+            <div className="w-full">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
                     {/* Card 1 */}
-                    <div className="bg-neutral-800 text-white p-4 rounded-xl">
-                        <div className="flex items-start gap-2">
-                            <PlusCircle className="text-white text-lg" />
-                            <div>
-                                <h3 className="font-semibold">How to create a membership</h3>
-                                <p className="text-sm text-neutral-300">
-                                    Paid membership for a club is a subscription that provides access to the club’s facilities, activities, and services in exchange for a fee.
-                                </p>
+                    <Link href='https://www.linmo.app/2024/10/26/how-to-create-a-membership/'>
+                        <div className="bg-neutral-800 text-white p-4 rounded-xl">
+                            <div className="flex items-start gap-2">
+                                <PlusCircle className="text-white text-lg" />
+                                <div>
+                                    <h3 className="font-semibold">How to create a membership</h3>
+                                    <p className="text-sm text-neutral-300">
+                                        Paid membership for a club is a subscription that provides access to the club’s facilities, activities, and services in exchange for a fee.
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </Link>
+
 
                     {/* Card 2 */}
                     <div className="bg-neutral-800 text-white p-4 rounded-xl">
-                        <div className="flex items-start gap-2">
-                            <Gift className="text-white text-lg" />
-                            <div>
-                                <h3 className="font-semibold">Class Packs vs. Memberships: A Quick Comparison</h3>
-                                <p className="text-sm text-neutral-300">
-                                    Why you should offer memberships instead of class packs.
-                                </p>
+                        <Link href="https://www.linmo.app/2025/02/20/why-yoga-teachers-should-offer-memberships-instead-of-class-packs/ ">
+                            <div className="flex items-start gap-2">
+                                <Gift className="text-white text-lg" />
+                                <div>
+                                    <h3 className="font-semibold">Class Packs vs. Memberships: A Quick Comparison</h3>
+                                    <p className="text-sm text-neutral-300">
+                                        Why you should offer memberships instead of class packs.
+                                    </p>
+                                </div>
                             </div>
-                        </div>
+                        </Link>
+
                     </div>
 
                     {/* Card 3 - Full width on large screens */}
@@ -581,6 +591,7 @@ const Subscriptions = () => {
                         </div>
                     </div>
                 </div>
+            </div>
 
             {isCurrencymodal && (
                 <CurrencyModal
